@@ -1,0 +1,63 @@
+html,
+body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+}
+
+#progress-bar-container{
+	width: 230px;
+	height: 20px;
+	margin: 0 auto;
+	position: relative;
+	top: 50%;
+	border-radius: 35px;
+	overflow: hidden;
+
+}
+/*Container für Ladebalken*/
+
+.progress-bar-child{
+	width: 100%;
+	height: 100%;
+}
+/* wie viel vom Ladebalken ausgefüllt ist*/
+
+.progress {
+	/*color: white; */
+	text-align: center;
+	line-height: 75px;
+	font-size: 35px;
+	animation-direction: reverse;
+	/*background: #aff7ad;*/
+	background: linear-gradient(to right, #9CECFB 0%, #9CECFB 25%, #65C7F7 50%, #65C7F7 50%, #0052D4 73%, #0052D4 100%);
+}
+/*Gradient*/
+
+.shrinker {
+	background-color: #BDBDBD;
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 100%;
+}
+
+.timelapse {
+	animation-name: timelapse;
+	animation-fill-mode: forwards;
+	animation-duration: 4s;
+	animation-timing-function: cubic-bezier(.86, .05, .4, .96);
+	/*Timer mit Verzögerung */
+}
+
+@keyframes timelapse {
+	0% {
+		width: 100%;
+	}
+	100% {
+		width: 0%;
+	}
+}
+/* Shrinker wird durch die timelaps verkleinert. Sekunde 0= 0%, wobei Shrinker 100% einnimmt. Gradientenfortschritt 100% und damit 0% Shrinker. 4s = 100% Gradient;
+ Shrinker ist 0% zu sehen
+  */

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>1Flugsuche</title>
+
+    <link rel="stylesheet" href="GradientCSS.css">
+    <link rel="stylesheet" href="./balken.css">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+</head>
+<body>
+
+
+<div id="waitOverlayWrapper" style="display: none;">
+    <div id="waitOverlayContent">
+        <div id="progress-bar-container">
+        </div>
+        <script type="text/javascript">
+                var neu = "<div class='progress-bar-child progress'></div><div class='progress-bar-child shrinker timelapse'></div>";
+                document.getElementById('progress-bar-container').innerHTML = neu;
+        </script>
+        <p class="text-center" style="margin-top:2.8em;">
+            Bitte warten...
+        </p>
+    </div>
+</div>
+
+<div id="menubar">
+    <table id="tabelle">
+        <tr>
+            <td>Herzlich Willkommen</td>
+            <td align=center>FLY HIGH</td>
+            <td align=right>
+                <img src="./phone.png" class="changeColor">
+                <img src="./user.png" class="changeColor">
+                <img src="./zahnrad.png" class="changeColor">
+
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="changeColorControl" style="display: none;">
+    <table id="tabelleFarbauswahl">
+        <tr>
+            <td width="30"> <button class="changeColorToBlue" style="color: deepskyblue;">Blau </button> </td>
+            <td width="30"> <button class="changeColorToGreen" style="color: mediumseagreen;">Grün</button></td>
+            <td width="30"><button  class="changeColorToRose" style="color:hotpink;">Rosa</button></td>
+            <td width="30"><button  class="changeColorToOriginal" style="color:lightblue;">Original</button></td>
+            <td  align=right><img src="./dreieck.png" class="changeColor2">
+            </td>
+        </tr>
+    </table>
+
+
+</div>
+<div class="headerBar">
+    <form action="http://flights.eliashenrich.de/form.php" method="POST" class="text-center" onsubmit="SubmitData();">
+        von
+        <input type="text" name="origin" value="SYD" placeholder="von" class="text-center">
+        nach
+        <input type="text" name="destination" value="LAX" placeholder="nach" class="text-center">
+        <input type="button" class="searchButton" value="Suchen" onclick="return SubmitData();">
+    </form>
+</div>
+
+
+
+<div class="contentWrapper">
+    <div class="contentLeft">
+        <h1>
+            Deine Flugwahl
+        </h1>
+
+        <ul class="flightList" id="flightList">
+            <li class="hidden" id="listDummy">
+                <span class="flightFrom"></span> -> <span class="flightTo"></span>
+                <span class="timeDeparture">13:00</span> <span class="timeArrival">17:00</span>
+            </li>
+        </ul>
+
+    </div>
+
+
+    <div class="contentRight">
+        <h1> Kartenansicht</h1>
+        <div id="map"></div>
+    </div>
+</div>
+
+<script>
+
+    function FlightSearchAPI() {
+        this.endpoint = 'http://flights.eliashenrich.de/api.php';
+        this.requestAPI = function(action, data, callback) {
+            var url = this.endpoint + '?action=' + action;
+            var keys = Object.keys(data);
+            for (var i = 0; i < keys.length; i++) {
+                var paramName = keys[i];
+                var paramValue = data[keys[i]];
+                url += "&" + paramName + "=" + paramValue;
+            }
+            var request = new XMLHttpRequest();
+            request.onreadystatechange = function() {
+                console.log("Status hat sich geändert", this.readyState);
+                // Ist die Anfrage beendet?
+                if (this.readyState === 4) {
+                    // Http-Statuscode prüfen
+                    if (this.status === 200) {
+                        console.log("Anfrage erfolgreich");
+                        console.log(this.responseText);
+                        callback(this.responseText);
+                    }
+                }
+            };
+            request.open('GET', url, true);
+            request.send();
+        };
+    }
+    var params = {
+        from: 25,
+        to: 23
+    };
+    var flightSearch = new FlightSearchAPI();
+    flightSearch.requestAPI('/route/find', params, successCallback);
+    function successCallback(data) {
+        var response = JSON.parse(data);
+        for (var i = 0; i < response.length; i++) {
+            var flug = response[i];
+            console.log("Flug " + i);
+            for (var j = 0; j < flug.length; j++) {
+                var leg = flug[j];
+                console.log("Leg " + j, leg);
+                var airportFrom = leg.airportFrom.CityName;
+                var airportTo = leg.airportTo.CityName;
+                addListItem(airportFrom, airportTo);
+            }
+        }
+    }
+    function showOverlay() {
+        addListItem("19:30");
+        return false;
+        var element = document.getElementById('waitOverlayWrapper');
+        element.style.display = "block";
+        return false;
+    }
+    function hideOverlay() {
+        var element = document.getElementById('waitOverlayWrapper');
+        element.style.display = 'none';
+    }
+    function addListItem(airportFrom, airportTo) {
+        var listItem = document.getElementById('listDummy');
+        // Listenelement klonen und neu einfügen
+        var newListItem = listItem.cloneNode(true);
+        newListItem.setAttribute('id', '');
+        newListItem.classList.remove('hidden');
+        // Kindelement des neuen Knotens bearbeiten
+        newListItem.getElementsByClassName('flightFrom')[0].innerText = airportFrom;
+        newListItem.getElementsByClassName('flightTo')[0].innerText = airportTo;
+        // airportFrom & airportTo setzen
+        document.getElementById('flightList').appendChild(newListItem);
+    }
+    var mapObject;
+    var accessToken = 'pk.eyJ1IjoiZWxrcm9rZXR0byIsImEiOiJjamplZ2NqODQybG4wM3F0ZTU0N2s4azdxIn0.VL6YIZWFhnan5AWzxgIFpw';
+
+    function initMap(mapId) {
+        mapObject = L.map(mapId, {
+            center: [-10.0, -170.0],
+            zoom: 4
+        });
+        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+            attribution: 'Copyright-Hinweise...',
+            maxZoom: 18,
+            id: 'mapbox.streets',
+            accessToken: accessToken
+        }).addTo(mapObject);
+    }
+    initMap('map');
+
+
+
+    $(document).ready(function() {
+
+        $('.searchButton').click(function(){
+            $('#waitOverlayWrapper').show();
+
+            setTimeout(function() {
+                $('#waitOverlayWrapper').fadeOut();
+            },4000)
+        });
+
+
+
+        //Wenn der Button mit der Klasse .changeColor geklickt wird, wird das Auswahlfeld .changeColorControl eingeblendet
+
+        $('.changeColor').click(function() {
+            $('.changeColorControl').show();
+        });
+
+
+        $('.changeColorToBlue').click(function() {
+            $('.headerBar').css('background','linear-gradient(140deg, #83a4d4, #b6fbff, lightblue, white, lightblue, #b6fbff, #83a4d4)');
+            $('.headerBar').css('background-size','200%');
+            $('.headerBar').css('animation','gra 5s ease infinite');
+        });
+        $('.changeColorToGreen').click(function() {
+            $('.headerBar').css('background','linear-gradient(to bottom,#4AC29A,white)');
+            $('.headerBar').css('animation','');
+        });
+        $('.changeColorToRose').click(function() {
+            $('.headerBar').css('background','radial-gradient(circle,#d9a7c7,#fffcdc)');
+            $('.headerBar').css('animation','');
+              });
+        $('.changeColorToOriginal').click(function() {
+            $('.headerBar').css('background','linear-gradient(to bottom,lightblue, #F2F2F2, #DBDBDB, #EAEAEA)');
+            $('.headerBar').css('animation','');
+        });
+
+        $('.changeColor2').click(function() {
+            $('.changeColorControl').hide();
+        });
+
+
+
+    });
+</script>
+
+
+
+
+</body>
+</html>

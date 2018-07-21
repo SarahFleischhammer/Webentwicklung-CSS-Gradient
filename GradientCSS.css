@@ -1,0 +1,271 @@
+html, body {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    font-family: "Javanese Text", sans-serif;
+    font-size: 12px;
+}
+
+/* MISC PROPERTIES */
+
+.text-center {
+    text-align: center;
+}
+
+#menubar {
+    position: relative;
+    background: lightblue;
+    width: 100%;
+    height: 45px;
+    font-size: 20px;
+}
+
+#tabelle {
+    width: 100%;
+    height: 100%;
+    table-layout: fixed;
+
+
+}
+
+#tabelleFarbauswahl {
+    width: 100%;
+    height: 100%;
+
+}
+
+/* HEADER BAR */
+.headerBar {
+    position: relative;
+    background: linear-gradient(to bottom, lightblue, #F2F2F2, #DBDBDB, #EAEAEA);
+    background-size:;
+    animation:;
+    border-bottom: 2px solid white;
+    padding: 50px;
+    /*Veränderung der Größe*/
+    font-size: 1.2rem;
+    font-family: "Javanese Text", sans-serif;
+
+    animation-direction: revert;
+    animation-timing-function:linear;
+
+}
+@keyframes gra {
+    0% {
+        background-position: 0%;
+    }
+    50% {
+        background-position: 100%;
+    }
+    100% {
+
+        background-position: 0%;
+    }
+}
+/*0%= 0sek, 50% ist 2,5 sek, und 100% =5sek, background position=0%, Gradient ganz links, bewegt sich nach ganz links und wieder zurück= reverse */
+
+.headerBar form {
+    width: 100%;
+}
+
+.headerBar input {
+    font-size: 1.2rem;
+    margin: 0 12px 0 12px;
+    /*zweite zwölf ist für den Unterschied von-sydney nach-lax*/
+}
+
+.headerBar input:last-of-type {
+    margin-left: 0;
+}
+
+.headerBar input[type="text"] {
+    width: 70px;
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid black;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    transition: background-color 2s;
+    transition-timing-function: ease-in-out;
+    font-family: "Javanese Text", sans-serif;
+
+}
+
+.headerBar input[type="text"]:hover, .headerBar input[type="text"]:focus {
+    /*wenn man drauf geht wird es weiß*/
+    background-color: white;
+    transition: background-color 0.2s;
+}
+
+.searchButton{
+    font-family: "Javanese Text", sans-serif;
+    background-color: aliceblue;
+}
+
+.contentWrapper {
+    height: 100%;
+    background-color: #f3f3f3;
+}
+
+.contentLeft {
+    height: 100%;
+    width: 35%;
+    float: left;
+    position: relative;
+    overflow-y: auto;
+}
+
+.contentLeft h1 {
+    margin: 0;
+    position: sticky;
+    top: 0; left: 0;
+    box-shadow: 0 1px 3px #9F9F9F;
+    font-size: 1.2rem;
+    background-color: aliceblue;
+}
+
+.contentRight {
+    height: 100%;
+    width: 65%;
+    float: right;
+}
+.contentRight h1 {
+    margin: 0;
+    position: sticky;
+    top: 0; left: 0;
+    box-shadow: 0 1px  #9F9F9F;
+    font-size: 1.2rem;
+    background-color: aliceblue;
+}
+
+#map {
+    height: 400px;
+    width: 1000px;
+    overflow: hidden;
+    z-index: 0;
+    }
+
+/* FLIGHT LIST */
+ul.flightList {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+ul.flightList li {
+    margin: 0;
+    padding: 5px;
+    width: 100%;
+    height: 4em;
+    border-bottom: 1px solid #909090;
+    cursor: pointer;
+}
+
+ul.flightList li:nth-of-type(odd) {
+    background-color: #DFDFDF;
+    transition: background-color 0.7s;
+    transition-timing-function: ease-in;
+}
+
+ul.flightList li:nth-of-type(even) {
+    background-color: #EFEFEF;
+    transition: background-color 0.7s;
+    transition-timing-function: ease-in;
+}
+
+ul.flightList li:hover {
+    background-color: #FFEFEF;
+    transition: background-color 0.1s;
+    transition-timing-function: ease-out;
+}
+
+ul.flightList p {
+    margin: 0 0 0.4em 0;
+    font-size: 1rem;
+    text-shadow: 1px 1px 0 #A0A0A0;
+}
+
+.flightRoute {
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+.timeDeparture::before {
+    content: "↗";
+}
+
+.timeArrival::before {
+    content: "↘";
+}
+
+
+/* WAIT OVERLAY WRAPPER */
+#waitOverlayWrapper {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(70, 70, 70, 0.4);
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index:1;
+}
+
+#waitOverlayContent {
+    width: 255px;
+    height: 160px;
+    background-color: white;
+    border-radius: 10px;
+    border: 1px solid gray;
+    box-shadow: 5px 5px 5px #9F9F9F;
+    position: absolute;
+    left: 40%;
+    top: calc(50% - 75px);
+}
+
+#waitPlane {
+    position: relative;
+    top: 5px;
+    left: 5px;
+    animation: planeFlight;
+    animation-duration: 8s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes planeFlight {
+    0% {
+        top: 15px;
+        left: 5px;
+        transform: rotate(0deg);
+    }
+    45% {
+        top: 15px;
+        left: 140px;
+        transform: rotate(0deg);
+    }
+    55% {
+        top: 15px;
+        left: 140px;
+        transform: rotate(180deg);
+    }
+    95% {
+        top: 15px;
+        left: 5px;
+        transform: rotate(180deg);
+    }
+    100% {
+        top: 15px;
+        left: 5px;
+        transform: rotate(0deg);
+    }
+}
+.changeColorControl{
+    background-color: aliceblue;
+}
+
+.changeColor {
+    background-color: transparent;
+}
